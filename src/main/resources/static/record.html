@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>签到记录</title>
+    <link rel="stylesheet" href="./css/public.css">
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <script src="./lib/axios.js"></script>
+    <script src="./lib/composeui.js"></script>
+    <script src="./lib/observable.js"></script>
+    <script src="./js/component.js"></script>
+    <script src="./api/api.js"></script>
+
+    <script>
+        (function () {
+            let tb = new ListObservable([]); // 表数据
+            let searchNumber = new Observable(''); // 搜索框内容
+
+            let pageinfo = new Observable({
+                pageNo: 1,
+                pageSize: 5,
+                maxPage: 1
+            }); // 页信息
+
+            // ======================= UI代码 ==========================
+            composeui({
+                mount: '#app',
+                composable: () => [
+                    card([
+                        search_bar('搜索', '请输入学号', searchNumber, onsearch = () => {
+                            getall_paged(searchNumber.get(), pageinfo.get().pageNo, pageinfo.get().pageSize)
+                        }),
+                        checkin_table(tb),
+                        pager(pageinfo, [5, 10], (new_page) => getall_paged(searchNumber.get(), new_page, pageinfo.get().pageSize)),
+                    ],
+                    padding=false),
+                ],
+                onmounted: () => {
+                    getall_paged('', pageinfo.get().pageNo, pageinfo.get().pageSize)
+                }
+            })
+
+            function checkin_table(table_observable) {
+                return table({cellspacing: 0},
+                    // 表头
+                    tr(th('Date'), th('Name'), th('Student ID'), th('Class Name')),
+
+                    // 表体，由于涉及到相同日期的单元格合并，所以稍显复杂
+                    new Reactive(table_observable, data =>
+                        items(data, ({_, list}) =>
+                            list.map(({name, sid, classname, checkdate}, index) =>
+                                tr(
+                                    index === 0 ? td(checkdate, {rowspan: list.length}) : null,
+                                    td(name), td(sid), td(classname),
+                                )
+                            )
+                        ).flat()
+                    )
+                );
+            }
+
+            // =============================== API调用 ==================================
+
+            // 将后端返回值转换成前端需要的格式（主要是把日期相同的捏合到一起）
+            function build_tb_data(res) {
+                let data = [];
+                for (let entry of res) {
+                    if (data.length !== 0 && data[data.length - 1].checkdate === entry.checkdate)  {
+                        data[data.length - 1].list.push(entry);
+                    } else {
+                        data.push({
+                            checkdate: entry.checkdate,
+                            list: [entry]
+                        });
+                    }
+                }
+                return data;
+            }
+
+            function getall_paged(sid, pageNo, pageSize) {
+                api.getCheckInList(pageNo, pageSize, sid)
+                    .then(res => {
+                        tb.set(build_tb_data(res.data.records))
+                        pageinfo.set({
+                            pageNo: res.data.current,
+                            pageSize: res.data.size,
+                            maxPage: res.data.pages
+                        })
+                    })
+                    .catch(err => show_error(err));
+            }
+
+            function show_error(msg) {
+                alert(msg);
+            }
+        })()
+    </script>
+</body>
+
+</html>

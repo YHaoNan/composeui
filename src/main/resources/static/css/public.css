@@ -1,0 +1,181 @@
+@font-face {
+    font-family: Muli;
+    src: url(../assets/font/Muli-Regular.ttf);
+}
+html {
+    /* --bg-color: #afb7cd;
+    --shadow-light: #959cae;
+    --shadow-dark: #c9d2ec; */
+    --bg-color: #e0e0e0;
+    --shadow-light: #bebebe;
+    --shadow-dark: #ffffff;
+    --text-color: #072b4f;
+    --text-color-secondary: #51555a;
+    --text-color-light: #cccccc;
+    --accent-color-1: rgb(233, 111, 167);
+    --accent-color-1: rgb(233, 111, 167);
+    --accent-color-2: rgb(238, 141, 87);
+    --accent-color-shadow-1: rgba(233, 111, 167, 0.7);
+    --accent-color-shadow-2: rgba(238, 141, 87, 0.7);
+}
+
+body {
+    text-align: center;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: Muli,sans-serif;
+    letter-spacing: 0.1em;
+}
+
+h2 {
+    margin-bottom: 40px;
+}
+
+input, button, select {
+    color: var(--text-color);
+    font-weight: bold;
+    font-family: Muli, sans-serif;
+}
+
+.card.padding {
+    padding: 60px 60px;
+}
+.card {
+    width: max-content;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 20px;
+    background: var(--bg-color);
+    box-shadow:  5px 5px 15px var(--shadow-light),
+                -5px -5px 12px var(--shadow-dark);
+}
+
+.checkin-input {
+    margin-bottom: 24px;
+}
+.checkin-button-1 {
+    margin-top: 28px;
+    margin-bottom: 24px;
+}
+.neo-form-entry.checkin-button-1.uninset {
+    background: linear-gradient(to bottom right, var(--accent-color-1), var(--accent-color-2));
+    box-shadow: 2px 2px 5px var(--accent-color-shadow-2),
+                -2px -2px 4px var(--accent-color-shadow-1);
+}
+
+.neo-form-entry.checkin-button-1.uninset button {
+    color: #ddd;
+}
+
+.neo-form-entry {
+    padding: 10px 20px;
+    border-radius: 20px;
+    background: var(--bg-color);
+}
+.neo-form-entry.inset {
+    box-shadow:  inset 2px 2px 5px var(--shadow-light),
+                inset -2px -2px 4px var(--shadow-dark);
+}
+.neo-form-entry.uninset {
+    box-shadow: 2px 2px 5px var(--shadow-light),
+                -2px -2px 4px var(--shadow-dark);
+}
+
+.neo-form-entry input, .neo-form-entry select, .neo-form-entry button {
+    width: 100%;
+    background-color: transparent;
+    border-style: none;
+    border: none;
+    outline: none;
+}
+
+table {
+    letter-spacing: 0;
+    width: 600px;
+    text-align: left;
+    font-size: 0.9em;
+    padding-left: 20px;
+    padding-right: 20px;
+    position: relative;
+}
+
+table tr {
+    height: 50px;
+}
+
+table td {
+    border-bottom: var(--text-color-light) 1px solid;
+}
+
+.search-bar input {
+    height: 36px;
+    box-shadow:  inset 2px 2px 5px var(--shadow-light),
+            inset -2px -2px 4px var(--shadow-dark);
+}
+
+.search-bar button {
+    height: 34px;
+    margin-left: 20px;
+    box-shadow: 2px 2px 5px var(--shadow-light),
+             -2px -2px 4px var(--shadow-dark);
+}
+
+.search-bar input, .search-bar button {
+    padding: 0px 20px;
+    display: inline-block;
+    background: transparent;
+    border-radius: 30px;
+    border-style: none;
+    border: none;
+    outline: none;
+}
+
+.card .search-bar {
+    text-align: right;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+.card .pager {
+    text-align: left;
+    padding: 20px;
+}
+.card .pager select {
+    border-radius: 30px;
+    display: inline-block;
+    padding: 4px 10px;
+    margin-left: 10px;
+    box-shadow:  inset 2px 2px 5px var(--shadow-light),
+            inset -2px -2px 4px var(--shadow-dark);
+    background-color: transparent;
+    border-style: none;
+    border: none;
+    outline: none;
+}
+
+.card .active-page-entry {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 30px;
+    box-shadow:  inset 2px 2px 5px var(--shadow-light),
+            inset -2px -2px 4px var(--shadow-dark);
+}
+.card .page-entry {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 30px;
+    box-shadow:  2px 2px 5px var(--shadow-light),
+            -2px -2px 4px var(--shadow-dark);
+}
+
+a {
+    color: var(--text-color);
+    text-decoration: none;
+}
+a:visited {
+    color: var(--text-color);
+}
+a:active {
+    color: var(--text-color);
+}

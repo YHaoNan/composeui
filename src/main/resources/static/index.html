@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>index</title>
+    <link rel="stylesheet" href="./css/public.css">
+</head>
+
+<body>
+    <div id="app"></div>
+    <script src="./lib/axios.js"></script>
+    <script src="./lib/composeui.js"></script>
+    <script src="./lib/observable.js"></script>
+    <script src="./js/component.js"></script>
+    <script src="./api/api.js"></script>
+    <script>
+        (function () {
+            let classes = new ListObservable([]); // 班级列表
+            let clz = new Observable(null);       // 用户选择的班级
+            let name = new Observable('');        // 姓名
+            let sid = new Observable('');         // 学号
+
+            composeui({
+                mount: '#app',
+                composable: () => 
+                    card([
+                        h2(text('CheckIN')),
+                        neo_form_entry('checkin-input', 
+                            input({placeholder: 'Your name'}, new Model(name))
+                        ),
+                        neo_form_entry('checkin-input', 
+                            input({placeholder: 'Your student id'}, new Model(sid))
+                        ),
+                        neo_form_entry('checkin-input',
+                            select(
+                                new Model(clz),
+                                new Reactive(classes, it =>
+                                    items(it, ({ classname }) =>
+                                        option({ value: classname }, text(classname))
+                                    )
+                                )
+                            )
+                        ),
+                        divider_hori(40),
+                        neo_form_entry('checkin-button-1',
+                            button(text('Submit'), {type: 'button', onclick: submitCheckIn}), 
+                        inset=false),
+                        neo_form_entry('checkin-button-2',
+                            button(text('Show history'), {type: 'button', onclick: gotoHistoryPage}), 
+                        inset=false),
+                    ]),
+
+                onmounted: () => {
+                    api.findAllClassesNeedCheckIn()
+                        .then(res => classes.set(res.data))
+                        .catch(err => alert(err));
+                }
+            })
+
+            function submitCheckIn() {
+                if (validate_form()) {
+                    api.checkIn(name.get(), sid.get(), clz.get())
+                        .then(_ => alert('签到成功'))
+                        .catch(err => alert(err))
+                }
+                return false;
+            }
+
+            function validate_form() {
+                if (is_non_empty(name) && is_non_empty(sid) && is_non_empty(clz)) {
+                    return true;
+                }
+                alert('请填写完整表单');
+                return false;
+            }
+
+            function is_non_empty(observable) {
+                let x = observable.get();
+                return x && x !== '';
+            }
+
+            function gotoHistoryPage() {
+                window.open('/record.html')
+            }
+        })()
+    </script>
+</body>
+
+</html>

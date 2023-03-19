@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>admin</title>
+</head>
+<body>
+    <div id="app"></div>
+    <script src="./lib/axios.js"></script>
+    <script src="./lib/composeui.js"></script>
+    <script src="./lib/observable.js"></script>
+    <script src="./js/component.js"></script>
+    <script src="./api/api.js"></script>
+    <script>
+        (function () {
+            let classes = new ListObservable([]); // 班级列表
+            let checkedIds = []; // 选中id列表
+            let errmsg = new Observable(''); // 错误消息
+
+            let classnameToAdd = new Observable(''); // 待添加的班级名
+
+            composeui({
+                mount: '#app',
+                composable: () => [
+                    h1('添加班级'),
+                    search_bar('添加', '', classnameToAdd, () => addClass(classnameToAdd.get())),
+                    h1('设置签到班级'),
+                    div(
+                        new Reactive(classes, it =>
+                            items(it, ({ id, classname, needCheckIn }) =>
+                                span(
+                                    input({ type: 'checkbox', prop: {checked: needCheckIn}, onchange: (e) => modifyCheckIds(id, e.target.checked)}),
+                                    text(classname)
+                                )
+                            )
+                        ),
+                    ),
+                    button('设置', {type: 'button', onclick: setNeedCheckedIn}),
+                    // 错误信息
+                    div(new Reactive(errmsg, it =>
+                        span(text(it), {style: 'color: red'})
+                    ))
+                ],
+
+                onmounted: () => {
+                    findAllClasses()
+                }
+            })
+
+
+            function modifyCheckIds(id, checked) {
+                if (!checked) {
+                    checkedIds = checkedIds.filter(t => t !== id);
+                } else {
+                    checkedIds.push(id)
+                }
+                console.log(checkedIds);
+            }
+
+            function findAllClasses() {
+                api.findAllClasses()
+                    .then(res => {
+                        classes.set(res.data);
+                        checkedIds = res.data.filter(e => e.needCheckIn).map(e => e.id);
+                    })
+                    .catch(e => show_error(err))
+            }
+
+            function addClass(value) {
+                if (value.trim() === '') {errmsg.set('班级名不能为空');return}
+                api.addClass(value)
+                    .then(res => {
+                        alert('添加成功');
+                        findAllClasses()
+                    })
+                    .catch(err => show_error(err));
+            }
+
+            function setNeedCheckedIn() {
+                api.setNeedCheckIn(checkedIds)
+                    .then(_ => {alert("成功"); findAllClasses();})
+                    .catch(err => show_error(err))
+            }
+
+            function show_error(msg) {
+                errmsg.set(msg);
+                setTimeout(() => errmsg.set(''), 2000)
+            }
+        })()
+    </script>
+</body>
+</html>
